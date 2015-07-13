@@ -1,6 +1,7 @@
 // YOUR CODE HERE:
 var app = {};
 
+app.username = window.location.search.substr(10) === "anonymous" ? "Funky Chicken" : decodeURIComponent(window.location.search.substr(10));
 //server
 app.server = "https://api.parse.com/1/classes/chatterbox";
 
@@ -44,6 +45,7 @@ app.fetch = function(){
 };
 
 //function to display single message
+  //escape messages
 app.displayMessage = function(message){
  $("#feed").append("<li class='message'>" + filterXSS(message.username) + ": " + filterXSS(message.text) + "</li>");
 
@@ -53,12 +55,42 @@ app.displayFeed = function(list){
   list.forEach(app.displayMessage);
 };
 
+$(document).on('ready', function(){
+  $('button').on('click', function(){
+
+    var message = {
+      username: app.username,
+      text: filterXSS( $('input').val() )
+    };
+
+    // console.log($('input').val());
+    app.send(message);
+
+
+  });
+
+  $('input').on('keyup', function(){
+    if ($('input').val() !== '') {
+      $('button').attr('disabled', false);
+    }  else {
+      $('button').attr('disabled', true);
+    }
+  })
+
+
+});
+
+
+
+
+
 
 
 //function to escape messages to/from server
+// we are using XSS-js so just do  filterXSS()
 
 
-//escape messages as SOON as they enter the program
+
 
 /*
 Message format
