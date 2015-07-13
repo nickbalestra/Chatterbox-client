@@ -31,21 +31,27 @@ app.fetch = function(){
     type: 'GET',
     contentType: 'application/json',
     success: function (data) {
-      console.log('chatterbox: Message sent');
+      console.log('chatterbox: Messages received');
+      app.displayFeed(data.results);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
-      console.error('chatterbox: Failed to send message');
+      console.error('chatterbox: Failed to receive message');
     }
   });
 };
 
+//function to display single message
+app.displayMessage = function(message){
+ $("#feed").append("<li class='message'>" + message.username + ": " + message.text + "</li>");
+
+};
+//function that utilizes single message function to display a list
+app.displayFeed = function(list){
+  list.forEach(app.displayMessage);
+};
 //function to escape messages to/from server
 
-
-//function to display single message
-
-//function that utilizes single message function to display a list
 
 //escape messages as SOON as they enter the program
 
