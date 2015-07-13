@@ -4,7 +4,9 @@ var app = {};
 //server
 app.server = "https://api.parse.com/1/classes/chatterbox";
 
-app.init = function(){};
+app.init = function(){
+  setInterval(app.fetch, 3000);
+};
 //function to send messages to server
 app.send = function(message){
   $.ajax({
@@ -43,13 +45,16 @@ app.fetch = function(){
 
 //function to display single message
 app.displayMessage = function(message){
- $("#feed").append("<li class='message'>" + message.username + ": " + message.text + "</li>");
+ $("#feed").append("<li class='message'>" + filterXSS(message.username) + ": " + filterXSS(message.text) + "</li>");
 
 };
 //function that utilizes single message function to display a list
 app.displayFeed = function(list){
   list.forEach(app.displayMessage);
 };
+
+
+
 //function to escape messages to/from server
 
 
