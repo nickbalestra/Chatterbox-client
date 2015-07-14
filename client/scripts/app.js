@@ -9,7 +9,9 @@ app.rooms = [];
 
 app.currentRoom = "";
 
-app.loadedSuccessfully = false;3
+app.loadedSuccessfully = false;
+
+app.friendList = {};
 
 app.init = function(){
   app.fetch(app.updateRooms);
@@ -90,16 +92,41 @@ app.displayClear = function(){
 //function to display single message
   //escape messages
 app.displayMessage = function(message){
- $("#feed").append("<li class='message'>" + filterXSS(message.username) + ": " + filterXSS(message.text) + "</li>");
-
+  if (app.friendList[message.username]) {
+    $("#feed").append("<li class='message isfriend'>" + "<a href='#' class='addFriend'>" +filterXSS(message.username) + "</a>" +": " + filterXSS(message.text) + "</li>");
+  } else {
+   $("#feed").append("<li class='message'>" + "<a href='#' class='addFriend'>" +filterXSS(message.username) + "</a>" +": " + filterXSS(message.text) + "</li>");
+  }
 };
+
 //function that utilizes single message function to display a list
 app.displayFeed = function(list){
   // should accept a second argument that is the roomname
   // and filter the list accordsingly before sending it to display
   app.displayClear();
   list.forEach(app.displayMessage);
+  app.toggleFriendship();
+
 };
+
+
+app.toggleFriendship = function(){
+  $('.addFriend').on('click', function(){
+    var name = $(this).text();
+    if (!app.friendList[name]) {
+    // console.log($(this).text());
+      if (confirm('Do you want to add '+ name + ' as your comrade?')) {
+        app.friendList[name] = name;
+        app.fetch(app.displayFeed, 'where', {roomname: app.currentRoom});
+      }
+    } else {
+      if (confirm("You really don't want " + name +  " as your comrade anymore?")) {
+        delete app.friendList[name];
+        app.fetch(app.displayFeed, 'where', {roomname: app.currentRoom});
+      }
+    }
+  });
+}
 
 //create new room
 app.createRoom = function(){
@@ -116,6 +143,8 @@ app.createRoom = function(){
 $(document).on('ready', function(){
 
   app.init();
+
+
 
   $("#rooms").change(function(){
     app.currentRoom = $( "select option:selected" ).val();

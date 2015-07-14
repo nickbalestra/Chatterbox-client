@@ -1,6 +1,6 @@
 // Socializing feature
-// TODO: setInterval to keep fetching
 // allow users to friends eachother and display friend messages in bold
+// TODO: setInterval to keep fetching
 // Backbone intro!
 //
 // TODO comment and cleanup code

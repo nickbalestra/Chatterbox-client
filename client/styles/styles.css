@@ -82,3 +82,8 @@ form input[type=text] {
 .spinner img {
     padding: 10px;
 }
+
+
+.isfriend {
+    font-weight: bold;
+}
