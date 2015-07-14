@@ -9,7 +9,7 @@ app.rooms = [];
 
 app.currentRoom = "";
 
-app.loadedSuccessfully = false;
+app.loadedSuccessfully = false;3
 
 app.init = function(){
   app.fetch(app.updateRooms);
@@ -19,15 +19,17 @@ app.init = function(){
 };
 
 //function to send messages to server
-app.send = function(message){
+app.send = function(message, callback){
+  callback = callback || function(){};
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: app.server,
+    url: app.server + 'chatterbox',
     type: 'POST',
     data: JSON.stringify(message),
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Message sent');
+      callback(data);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -99,9 +101,16 @@ app.displayFeed = function(list){
   list.forEach(app.displayMessage);
 };
 
-//set current room function, will be used in document.ready and displayFeed
-app.setCurrentRoom = function(){
+//create new room
+app.createRoom = function(){
+  app.currentRoom = prompt("What would you like to call your new room?");
+  var autoMessage = {
+    username: 'NickNLuke',
+    text: 'Welcome to this new room created by ' + app.username + '!',
+    roomname: app.currentRoom
+  };
 
+  app.send(autoMessage, function(){app.fetch(app.updateRooms)});
 };
 
 $(document).on('ready', function(){
@@ -110,15 +119,17 @@ $(document).on('ready', function(){
 
   $("#rooms").change(function(){
     app.currentRoom = $( "select option:selected" ).val();
-    //app.fetch(app.displayFeed, 'where', {"roomname":"4chan"})
     app.fetch(app.displayFeed, 'where', {roomname: app.currentRoom});
   });
 
-  $('button').on('click', function(){
+  $("#createRoom").on('click', app.createRoom);
+
+  $('#send').on('click', function(){
 
     var message = {
       username: app.username,
-      text: filterXSS( $('input').val() ) // add parameter for room
+      text: filterXSS( $('input').val() ),
+      roomname: app.currentRoom
     };
 
     // console.log($('input').val());
