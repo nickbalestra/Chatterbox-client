@@ -12,7 +12,9 @@ app.currentRoom = "";
 app.loadedSuccessfully = false;
 
 app.init = function(){
-  //app.fetch();
+  app.fetch(app.updateRooms);
+
+  //app.fetch(app.displayFeed, 'where', {"roomname":"4chan"})
   //setInterval(app.fetch, 3000);
 };
 
@@ -36,7 +38,7 @@ app.send = function(message){
 
 //function to fetch from the server
 //Super powerful fetching function
-app.fetch = function(callback, endpoint, queryPrefix, query){
+app.fetch = function(callback, queryPrefix, query, endpoint){
   if( query ){
     query = queryPrefix + '=' + JSON.stringify(query);
   }
@@ -71,6 +73,7 @@ app.updateRooms = function(listOfMessages){
   app.currentRoom = app.rooms[0];
 
   $('#rooms').html('');
+  $('#rooms').append('<option> Please select a room </option>');
   $.each( app.rooms, function(i){
     $('#rooms').append('<option value="'+ app.rooms[i] +'">' + app.rooms[i] + '</option>')
   });
@@ -92,9 +95,7 @@ app.displayMessage = function(message){
 app.displayFeed = function(list){
   // should accept a second argument that is the roomname
   // and filter the list accordsingly before sending it to display
-  // list = _.filter(list, function(element){
-  //   return element.roomname === app.currentRoom; // currentRoom is an empty string at this point
-  // });
+  app.displayClear();
   list.forEach(app.displayMessage);
 };
 
@@ -109,6 +110,8 @@ $(document).on('ready', function(){
 
   $("#rooms").change(function(){
     app.currentRoom = $( "select option:selected" ).val();
+    //app.fetch(app.displayFeed, 'where', {"roomname":"4chan"})
+    app.fetch(app.displayFeed, 'where', {roomname: app.currentRoom});
   });
 
   $('button').on('click', function(){
