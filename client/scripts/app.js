@@ -5,8 +5,15 @@ app.username = window.location.search.substr(10) === "anonymous" ? "Funky Chicke
 //server
 app.server = "https://api.parse.com/1/classes/chatterbox";
 
+app.rooms = [];
+
+app.currentRoom = "";
+
+app.loadedSuccessfully = false;
+
 app.init = function(){
-  setInterval(app.fetch, 3000);
+  app.fetch();
+  //setInterval(app.fetch, 3000);
 };
 //function to send messages to server
 app.send = function(message){
@@ -36,6 +43,7 @@ app.fetch = function(){
     success: function (data) {
       console.log('chatterbox: Messages received');
       app.displayFeed(data.results);
+      app.updateRooms(data.results);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -43,6 +51,27 @@ app.fetch = function(){
     }
   });
 };
+
+app.updateRooms = function(listOfMessages){
+  app.rooms = _.chain(listOfMessages)
+    .pluck('roomname')
+    .without('', undefined)
+    .union(app.rooms) //Takes multiple arrays and returns 1 array with no repeats
+    .value();
+
+  app.currentRoom = app.rooms[0];
+
+  $('#rooms').html('');
+  $.each( app.rooms, function(i){
+    $('#rooms').append('<option value="'+ app.rooms[i] +'">' + app.rooms[i] + '</option>')
+  });
+
+}
+
+
+app.displayClear = function(){
+  $("#feed").html('');
+}
 
 //function to display single message
   //escape messages
@@ -52,10 +81,19 @@ app.displayMessage = function(message){
 };
 //function that utilizes single message function to display a list
 app.displayFeed = function(list){
+  // should accept a second argument that is the roomname
+  // and filter the list accordsingly before sending it to display
   list.forEach(app.displayMessage);
 };
 
 $(document).on('ready', function(){
+
+  app.init();
+
+  $("#rooms").change(function(){
+    app.currentRoom = $( "select option:selected" ).val();
+  });
+
   $('button').on('click', function(){
 
     var message = {
@@ -81,6 +119,7 @@ $(document).on('ready', function(){
 });
 
 
+// $("#rooms option[value='4chan']").attr("selected", true);
 
 
 
