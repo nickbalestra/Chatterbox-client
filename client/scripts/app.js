@@ -3,7 +3,7 @@ var app = {};
 
 app.username = window.location.search.substr(10) === "anonymous" ? "Funky Chicken" : decodeURIComponent(window.location.search.substr(10));
 //server
-app.server = "https://api.parse.com/1/classes/chatterbox";
+app.server = "https://api.parse.com/1/classes/";
 
 app.rooms = [];
 
@@ -12,9 +12,10 @@ app.currentRoom = "";
 app.loadedSuccessfully = false;
 
 app.init = function(){
-  app.fetch();
+  //app.fetch();
   //setInterval(app.fetch, 3000);
 };
+
 //function to send messages to server
 app.send = function(message){
   $.ajax({
@@ -34,16 +35,24 @@ app.send = function(message){
 };
 
 //function to fetch from the server
-app.fetch = function(){
+//Super powerful fetching function
+app.fetch = function(callback, endpoint, queryPrefix, query){
+  if( query ){
+    query = queryPrefix + '=' + JSON.stringify(query);
+  }
+  else{
+    query = '';
+  }
+  endpoint = endpoint || 'chatterbox';
   $.ajax({
     // This is the url you should use to communicate with the parse API server.
-    url: app.server,
+    url: app.server + endpoint,
     type: 'GET',
+    data: query,
     contentType: 'application/json',
     success: function (data) {
       console.log('chatterbox: Messages received');
-      app.displayFeed(data.results);
-      app.updateRooms(data.results);
+      callback(data.results);
     },
     error: function (data) {
       // See: https://developer.mozilla.org/en-US/docs/Web/API/console.error
@@ -83,7 +92,15 @@ app.displayMessage = function(message){
 app.displayFeed = function(list){
   // should accept a second argument that is the roomname
   // and filter the list accordsingly before sending it to display
+  // list = _.filter(list, function(element){
+  //   return element.roomname === app.currentRoom; // currentRoom is an empty string at this point
+  // });
   list.forEach(app.displayMessage);
+};
+
+//set current room function, will be used in document.ready and displayFeed
+app.setCurrentRoom = function(){
+
 };
 
 $(document).on('ready', function(){
@@ -98,7 +115,7 @@ $(document).on('ready', function(){
 
     var message = {
       username: app.username,
-      text: filterXSS( $('input').val() )
+      text: filterXSS( $('input').val() ) // add parameter for room
     };
 
     // console.log($('input').val());
