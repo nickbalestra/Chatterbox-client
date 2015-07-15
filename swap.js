@@ -20,6 +20,7 @@
 //set currentRoom to room passed in
 //Automate message with current room created by username
 
+// refactor idea: define function/methods inside the app object literal
 
 // Messages
 
