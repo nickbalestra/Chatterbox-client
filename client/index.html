@@ -8,7 +8,8 @@
     <!-- dependencies -->
     <script src="bower_components/jquery/jquery.min.js"></script>
     <script src="bower_components/underscore/underscore-min.js"></script>
-    <script src="bower_components/xss/dist/xss.min.js"></script>
+    <script src="bower_components/backbone/backbone-min.js"></script>
+
     <!-- your scripts -->
     <script src="env/config.js"></script>
     <script src="scripts/app.js"></script>
@@ -17,15 +18,27 @@
     <div id="main">
       <h1>chatterbox</h1>
       <!-- Your HTML goes here! -->
-        <select id="rooms">
 
-        </select>
-
-        <input type="text">
-        <button id="send" disabled>Send</button>
-        <button id="createRoom">Create a room!</button>
-
-      <ul id="feed"></ul>
+      <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
+      <div id="rooms">
+        Room: <select id="roomSelect"></select>
+      </div>
+      <form action="#" id="send" method="post">
+        <input type="text" name="message" id="message"/>
+        <input type="submit" name="submit" class="submit"/>
+      </form>
+      <div id="chats"></div>
     </div>
+
+    <script>
+      $(function(){
+        var messages = new Messages();
+        messages.load();
+        var formView = new FormView({el: $('#main'), collection: messages});
+        var messagesView = new MessagesView({el: $('#chats'), collection: messages});
+        var roomsSelectorView = new RoomsSelectorView({el: $('#rooms'), collection: messages});
+        setInterval(messages.load.bind(messages), 1000);
+      });
+    </script>
   </body>
 </html>
