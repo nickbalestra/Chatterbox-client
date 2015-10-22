@@ -11,15 +11,13 @@ var Message = Backbone.Model.extend({
 var Messages = Backbone.Collection.extend({
   model: Message,
   url : 'https://api.parse.com/1/classes/chatterbox/',
-  
-  
+
   load: function(){
     this.fetch({data: {order: '-createdAt'}});
   },
 
   parse: function(response, options) {
     var reversed = response.results.reverse();
-    this.activeRoom = reversed[0].roomname
     return reversed;
   }
 });
@@ -42,8 +40,9 @@ var FormView = Backbone.View.extend({
     this.collection.create({
       username: window.location.search.substr(10),
       text: $text.val(),
-      roomname: 'lobby'
+      roomname: this.collection.activeRoom
     });
+    
 
     $text.val('');
   },
@@ -82,15 +81,14 @@ var RoomsSelectorView = Backbone.View.extend({
 
   renderRoom: function(room){
     if (room.get('roomname') && !this.onscreenRooms[room.get('roomname')]) {
-      var roomname = room.get('roomname');
-     
-    
-      this.$('#roomSelect').append($('<option>', { value : roomname }).text(roomname));
-      
-      this.onscreenRooms[roomname] = true;
+      var roomName = room.get('roomname');
+      this.$('#roomSelect').append($('<option>', { value : roomName }).text(roomName));
+      this.onscreenRooms[roomName] = true;
     }
   }
 });
+
+
 
 var MessageView = Backbone.View.extend({
 
@@ -101,32 +99,33 @@ var MessageView = Backbone.View.extend({
 
   render: function(){
     this.$el.html(this.template(this.model.attributes));  // {data: this.model.attributes}
-    // console.log(this.model.get('roomname'));
     return this.$el;
   }
 });
 
+
+
 var MessagesView = Backbone.View.extend({
   initialize: function(){
-    this.activeRoom = this.collection;
     this.collection.on('sync', this.render, this);
-    this.collection.on('changeRoom', this.changeRoom, this);
+    this.collection.on('changeRoom', this.renderRoom, this);
     this.onscreenMessages = {};
   },
 
-  changeRoom: function(name){
+  renderRoom: function(name){
+    this.empty();
     this.onscreenMessages = {};
-    this.activeRoom = name;
+    this.collection.activeRoom = name;
     this.render();
   },
 
+  empty: function(){
+    this.$el.empty();
+  },
+
   render: function(){
-    // todo being able to dynamically render this based on some room state we should track somehwere
-    // maybe a collection ?
-    
-    _.each(this.collection.where({roomname: this.activeRoom}), function(message){
+    _.each(this.collection.where({roomname: this.collection.activeRoom || 'lobby'}), function(message){
       this.renderMessage(message);
-      // console.log(message.roomname);
     }, this);
   },
 
