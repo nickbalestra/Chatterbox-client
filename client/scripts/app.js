@@ -59,13 +59,22 @@ var FormView = Backbone.View.extend({
 });
 
 
-var RoomsSelectorView = Backbone.View.extend({
+var Rooms = Backbone.View.extend({
   events: {
-    'change #roomSelect': 'check'
+    'click #addRoom': 'addRoom',
+    'change #roomSelect': 'changeRooom'
   },
 
-  check: function(e){
+  changeRooom: function(e){
     this.collection.trigger('changeRoom', e.target.value);
+  },
+
+  addRoom: function(){
+    var roomName = prompt('Room name');
+    this.collection.activeRoom = roomName;
+    this.$('#roomSelect').prepend($('<option>', { value : roomName }).text(roomName)).prop('selected', true);
+    this.$('#roomSelect option:eq(0)').prop('selected', true);
+    this.collection.trigger('empty', roomName);
   },
 
   initialize: function(){
@@ -109,6 +118,7 @@ var MessagesView = Backbone.View.extend({
   initialize: function(){
     this.collection.on('sync', this.render, this);
     this.collection.on('changeRoom', this.renderRoom, this);
+    this.collection.on('empty', this.empty, this);
     this.onscreenMessages = {};
   },
 

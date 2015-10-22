@@ -22,7 +22,9 @@
       <div class="spinner"><img src="images/spiffygif_46x46.gif"></div>
       <div id="rooms">
         Room: <select id="roomSelect"></select>
+        <button type="button" id="addRoom">Add Room</button>
       </div>
+
       <form action="#" id="send" method="post">
         <input type="text" name="message" id="message"/>
         <input type="submit" name="submit" class="submit"/>
@@ -36,7 +38,7 @@
         messages.load();
         var formView = new FormView({el: $('#main'), collection: messages});
         var messagesView = new MessagesView({el: $('#chats'), collection: messages});
-        var roomsSelectorView = new RoomsSelectorView({el: $('#rooms'), collection: messages});
+        var rooms = new Rooms({el: $('#rooms'), collection: messages});
         setInterval(messages.load.bind(messages), 1000);
       });
     </script>
