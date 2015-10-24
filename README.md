@@ -12,7 +12,7 @@ The repository consist of
 - backbone ES6 app
 - test Specs files.
 
-### Chatterbox app - Jquery version / Backbone version / BackboneES6 version
+#### Chatterbox app - Jquery version / Backbone version / BackboneES6 version
 
 The app allows the user to chose rooms and fetch/post messages from and to a parse based API backend.
 
