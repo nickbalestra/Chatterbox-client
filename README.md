@@ -12,9 +12,9 @@ The repository consist of
 - backbone ES6 app
 - test Specs files.
 
-### BoardViewer - backbone
+### Chatterbox app - Jquery version / Backbone version / BackboneES6 version
 
-The clinet is backbone app allowing to chose rooms, and fetch/post messages from ant to a parse based API backend.
+The app allows the user to chose rooms and fetch/post messages from and to a parse based API backend.
 
 ## Install:
 
