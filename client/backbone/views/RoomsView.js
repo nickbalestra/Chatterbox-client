@@ -7,6 +7,7 @@ var RoomsView = Backbone.View.extend({
 
   initialize: function(){
     this.collection.on('sync', this.render, this);
+    this.collection.currentRoom = 'lobby';
     this.availableRooms = {};
   },
 

@@ -10,6 +10,7 @@ class RoomsView extends Backbone.View {
 
   initialize() {
     this.collection.on('sync', this.render, this);
+    this.collection.currentRoom = 'lobby';
     this.availableRooms = {};
   }
 
